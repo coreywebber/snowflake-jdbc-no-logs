@@ -749,7 +749,7 @@ public class ConnectionIT extends BaseJDBCTest {
         fail("should be able to unwrap");
       }
       try {
-        connection.unwrap(SnowflakeDriver.class);
+        connection.unwrap(SnowflakeNoLogDriver.class);
         fail("should fail to cast");
       } catch (SQLException ex) {
         // nop

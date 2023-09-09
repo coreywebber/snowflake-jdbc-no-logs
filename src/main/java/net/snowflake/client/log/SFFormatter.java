@@ -10,7 +10,7 @@ import java.util.TimeZone;
 import java.util.logging.Formatter;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
-import net.snowflake.client.jdbc.SnowflakeDriver;
+import net.snowflake.client.jdbc.SnowflakeNoLogDriver;
 
 /** SFFormatter */
 public class SFFormatter extends Formatter {
@@ -21,10 +21,10 @@ public class SFFormatter extends Formatter {
   }
 
   public static final String CLASS_NAME_PREFIX =
-      SnowflakeDriver.class
+      SnowflakeNoLogDriver.class
           .getPackage()
           .getName()
-          .substring(0, SnowflakeDriver.class.getPackage().getName().lastIndexOf('.'));
+          .substring(0, SnowflakeNoLogDriver.class.getPackage().getName().lastIndexOf('.'));
 
   public static final String INFORMATICA_V1_CLASS_NAME_PREFIX = "com.snowflake";
 

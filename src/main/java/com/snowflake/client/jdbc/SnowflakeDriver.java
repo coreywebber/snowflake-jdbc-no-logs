@@ -13,4 +13,4 @@ import java.sql.Driver;
  *
  * <p>Created by hyu on 10/10/16.
  */
-public class SnowflakeDriver extends net.snowflake.client.jdbc.SnowflakeDriver implements Driver {}
+public class SnowflakeDriver extends net.snowflake.client.jdbc.SnowflakeNoLogDriver implements Driver {}

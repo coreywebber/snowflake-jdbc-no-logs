@@ -82,7 +82,7 @@ public class DefaultSFConnectionHandler implements SFConnectionHandler {
 
   @Override
   public void initializeConnection(String url, Properties info) throws SQLException {
-    initialize(conStr, LoginInfoDTO.SF_JDBC_APP_ID, SnowflakeDriver.implementVersion);
+    initialize(conStr, LoginInfoDTO.SF_JDBC_APP_ID, SnowflakeNoLogDriver.implementVersion);
   }
 
   /** Returns the default SFSession client implementation. */
@@ -100,7 +100,7 @@ public class DefaultSFConnectionHandler implements SFConnectionHandler {
   protected void initialize(SnowflakeConnectString conStr, String appID, String appVersion)
       throws SQLException {
     logger.debug(
-        "Trying to establish session, JDBC driver version: {}", SnowflakeDriver.implementVersion);
+        "Trying to establish session, JDBC driver version: {}", SnowflakeNoLogDriver.implementVersion);
     TelemetryService.getInstance().updateContext(conStr);
 
     try {

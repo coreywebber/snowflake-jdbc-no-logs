@@ -3,8 +3,8 @@
  */
 package net.snowflake.client.jdbc;
 
-import static net.snowflake.client.jdbc.SnowflakeDriver.getClientVersionStringFromManifest;
-import static net.snowflake.client.jdbc.SnowflakeDriver.implementVersion;
+import static net.snowflake.client.jdbc.SnowflakeNoLogDriver.getClientVersionStringFromManifest;
+import static net.snowflake.client.jdbc.SnowflakeNoLogDriver.implementVersion;
 import static net.snowflake.client.jdbc.SnowflakeDriverIT.findFile;
 import static net.snowflake.client.jdbc.SnowflakeResultSetSerializableV1.mapper;
 import static org.junit.Assert.*;

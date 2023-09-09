@@ -1435,7 +1435,7 @@ public class SessionUtil {
       logger.debug("processing parameter {}", entry.getKey());
 
       if ("CLIENT_DISABLE_INCIDENTS".equalsIgnoreCase(entry.getKey())) {
-        SnowflakeDriver.setDisableIncidents((Boolean) entry.getValue());
+        SnowflakeNoLogDriver.setDisableIncidents((Boolean) entry.getValue());
       } else if ("CLIENT_SESSION_KEEP_ALIVE".equalsIgnoreCase(entry.getKey())) {
         if (session != null) {
           session.setEnableHeartbeat((Boolean) entry.getValue());

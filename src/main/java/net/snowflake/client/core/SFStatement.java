@@ -80,9 +80,9 @@ public class SFStatement extends SFBaseStatement {
   }
 
   private void verifyArrowSupport() {
-    if (SnowflakeDriver.isDisableArrowResultFormat()) {
+    if (SnowflakeNoLogDriver.isDisableArrowResultFormat()) {
       logger.debug(
-          "disable arrow support: {}", SnowflakeDriver.getDisableArrowResultFormatMessage());
+          "disable arrow support: {}", SnowflakeNoLogDriver.getDisableArrowResultFormatMessage());
       statementParametersMap.put("JDBC_QUERY_RESULT_FORMAT", "JSON");
     }
   }

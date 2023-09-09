@@ -19,8 +19,8 @@ import net.snowflake.common.core.SqlState;
  * <p>Note: don't add logger to this class since logger init will potentially break driver class
  * loading
  */
-public class SnowflakeDriver implements Driver {
-  static SnowflakeDriver INSTANCE;
+public class SnowflakeNoLogDriver implements Driver {
+  static SnowflakeNoLogDriver INSTANCE;
 
   public static final Properties EMPTY_PROPERTIES = new Properties();
   public static String implementVersion = "3.14.1";
@@ -39,9 +39,9 @@ public class SnowflakeDriver implements Driver {
 
   static {
     try {
-      DriverManager.registerDriver(INSTANCE = new SnowflakeDriver());
+      DriverManager.registerDriver(INSTANCE = new SnowflakeNoLogDriver());
     } catch (SQLException ex) {
-      throw new IllegalStateException("Unable to register " + SnowflakeDriver.class.getName(), ex);
+      throw new IllegalStateException("Unable to register " + SnowflakeNoLogDriver.class.getName(), ex);
     }
 
     initializeArrowSupport();
@@ -233,7 +233,7 @@ public class SnowflakeDriver implements Driver {
   }
 
   public static void setDisableIncidents(boolean throttleIncidents) {
-    SnowflakeDriver.disableIncidents = throttleIncidents;
+    SnowflakeNoLogDriver.disableIncidents = throttleIncidents;
   }
 
   public static final void main(String[] args) {

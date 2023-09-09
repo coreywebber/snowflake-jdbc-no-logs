@@ -14,7 +14,7 @@ import javax.sql.PooledConnection;
 import net.snowflake.client.category.TestCategoryConnection;
 import net.snowflake.client.jdbc.BaseJDBCTest;
 import net.snowflake.client.jdbc.SnowflakeConnectionV1;
-import net.snowflake.client.jdbc.SnowflakeDriver;
+import net.snowflake.client.jdbc.SnowflakeNoLogDriver;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -135,7 +135,7 @@ public class LogicalConnectionLatestIT extends BaseJDBCTest {
         fail("should be able to unwrap");
       }
       try {
-        logicalConnection.unwrap(SnowflakeDriver.class);
+        logicalConnection.unwrap(SnowflakeNoLogDriver.class);
         fail("should fail to cast");
       } catch (SQLException ex) {
         // nop

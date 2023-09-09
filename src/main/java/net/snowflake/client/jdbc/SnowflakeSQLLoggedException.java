@@ -124,7 +124,7 @@ public class SnowflakeSQLLoggedException extends SnowflakeSQLException {
     JSONObject oobValue = new JSONObject();
     oobValue.put("type", TelemetryField.SQL_EXCEPTION.toString());
     oobValue.put("DriverType", LoginInfoDTO.SF_JDBC_APP_ID);
-    oobValue.put("DriverVersion", SnowflakeDriver.implementVersion);
+    oobValue.put("DriverVersion", SnowflakeNoLogDriver.implementVersion);
     if (!Strings.isNullOrEmpty(queryId)) {
       oobValue.put("QueryID", queryId);
     }
@@ -149,7 +149,7 @@ public class SnowflakeSQLLoggedException extends SnowflakeSQLException {
     ObjectNode ibValue = mapper.createObjectNode();
     ibValue.put("type", TelemetryField.SQL_EXCEPTION.toString());
     ibValue.put("DriverType", LoginInfoDTO.SF_JDBC_APP_ID);
-    ibValue.put("DriverVersion", SnowflakeDriver.implementVersion);
+    ibValue.put("DriverVersion", SnowflakeNoLogDriver.implementVersion);
     if (!Strings.isNullOrEmpty(queryId)) {
       ibValue.put("QueryID", queryId);
     }
