@@ -312,23 +312,23 @@ public class SnowflakeDatabaseMetaData implements DatabaseMetaData {
   public String getDriverVersion() throws SQLException {
     logger.debug("public String getDriverVersion()", false);
     raiseSQLExceptionIfConnectionIsClosed();
-    return SnowflakeNoLogDriver.majorVersion
+    return SnowflakeDriver.majorVersion
         + "."
-        + SnowflakeNoLogDriver.minorVersion
+        + SnowflakeDriver.minorVersion
         + "."
-        + SnowflakeNoLogDriver.patchVersion;
+        + SnowflakeDriver.patchVersion;
   }
 
   @Override
   public int getDriverMajorVersion() {
     logger.debug("public int getDriverMajorVersion()", false);
-    return SnowflakeNoLogDriver.majorVersion;
+    return SnowflakeDriver.majorVersion;
   }
 
   @Override
   public int getDriverMinorVersion() {
     logger.debug("public int getDriverMinorVersion()", false);
-    return SnowflakeNoLogDriver.minorVersion;
+    return SnowflakeDriver.minorVersion;
   }
 
   @Override

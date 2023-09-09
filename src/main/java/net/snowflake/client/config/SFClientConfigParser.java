@@ -8,7 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import net.snowflake.client.jdbc.SnowflakeNoLogDriver;
+import net.snowflake.client.jdbc.SnowflakeDriver;
 import net.snowflake.client.log.SFLogger;
 import net.snowflake.client.log.SFLoggerFactory;
 
@@ -80,12 +80,12 @@ public class SFClientConfigParser {
 
   public static String getConfigFilePathFromJDBCJarLocation() {
     try {
-      if (SnowflakeNoLogDriver.class.getProtectionDomain() != null
-          && SnowflakeNoLogDriver.class.getProtectionDomain().getCodeSource() != null
-          && SnowflakeNoLogDriver.class.getProtectionDomain().getCodeSource().getLocation() != null) {
+      if (SnowflakeDriver.class.getProtectionDomain() != null
+          && SnowflakeDriver.class.getProtectionDomain().getCodeSource() != null
+          && SnowflakeDriver.class.getProtectionDomain().getCodeSource().getLocation() != null) {
 
         String jarPath =
-            SnowflakeNoLogDriver.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+            SnowflakeDriver.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 
         // remove /snowflake-jdbc-3.13.29.jar and anything that follows it from the path.
         String updatedPath = new File(jarPath).getParentFile().getPath();

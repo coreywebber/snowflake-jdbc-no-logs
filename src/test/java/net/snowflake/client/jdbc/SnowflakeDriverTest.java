@@ -59,7 +59,7 @@ public class SnowflakeDriverTest {
 
   @Test
   public void testAcceptUrls() throws Exception {
-    SnowflakeNoLogDriver snowflakeDriver = SnowflakeNoLogDriver.INSTANCE;
+    SnowflakeDriver snowflakeDriver = SnowflakeDriver.INSTANCE;
 
     Map<String, String> expectedParameters;
 
@@ -345,7 +345,7 @@ public class SnowflakeDriverTest {
 
     for (TestCase t : testCases) {
       assertTrue("URL is not valid: " + t.url, snowflakeDriver.acceptsURL(t.url));
-      t.match(t.url, SnowflakeConnectString.parse(t.url, SnowflakeNoLogDriver.EMPTY_PROPERTIES));
+      t.match(t.url, SnowflakeConnectString.parse(t.url, SnowflakeDriver.EMPTY_PROPERTIES));
     }
 
     // negative tests
@@ -364,7 +364,7 @@ public class SnowflakeDriverTest {
 
   @Test
   public void testInvalidNullConnect() {
-    SnowflakeNoLogDriver snowflakeDriver = SnowflakeNoLogDriver.INSTANCE;
+    SnowflakeDriver snowflakeDriver = SnowflakeDriver.INSTANCE;
     try {
       snowflakeDriver.connect(/* url= */ null, null);
       fail();
@@ -375,7 +375,7 @@ public class SnowflakeDriverTest {
 
   @Test
   public void testGetVersion() {
-    SnowflakeNoLogDriver snowflakeDriver = SnowflakeNoLogDriver.INSTANCE;
+    SnowflakeDriver snowflakeDriver = SnowflakeDriver.INSTANCE;
 
     int majorVersion = snowflakeDriver.getMajorVersion();
     int minorVersion = snowflakeDriver.getMinorVersion();
@@ -386,13 +386,13 @@ public class SnowflakeDriverTest {
 
   @Test
   public void testJDBCCompliant() {
-    SnowflakeNoLogDriver snowflakeDriver = SnowflakeNoLogDriver.INSTANCE;
+    SnowflakeDriver snowflakeDriver = SnowflakeDriver.INSTANCE;
     assertFalse(snowflakeDriver.jdbcCompliant());
   }
 
   @Test
   public void testGetParentLogger() throws SQLException {
-    SnowflakeNoLogDriver snowflakeDriver = SnowflakeNoLogDriver.INSTANCE;
+    SnowflakeDriver snowflakeDriver = SnowflakeDriver.INSTANCE;
     assertNull(snowflakeDriver.getParentLogger());
   }
 
@@ -400,7 +400,7 @@ public class SnowflakeDriverTest {
   public void testMain() {
     // Can't get version information during test phase
     // Just make sure this function won't break
-    SnowflakeNoLogDriver snowflakeDriver = SnowflakeNoLogDriver.INSTANCE;
+    SnowflakeDriver snowflakeDriver = SnowflakeDriver.INSTANCE;
     String[] args = {"--version"};
     snowflakeDriver.main(args);
   }
@@ -408,12 +408,12 @@ public class SnowflakeDriverTest {
   @Test
   public void testSuppressIllegalReflectiveAccessWarning() {
     // Just to make sure this function won't break anything
-    SnowflakeNoLogDriver.disableIllegalReflectiveAccessWarning();
+    SnowflakeDriver.disableIllegalReflectiveAccessWarning();
   }
 
   @Test
   public void testParseConnectStringException() {
-    SnowflakeNoLogDriver snowflakeDriver = SnowflakeNoLogDriver.INSTANCE;
+    SnowflakeDriver snowflakeDriver = SnowflakeDriver.INSTANCE;
     Properties info = new Properties();
     String jdbcConnectString =
         "jdbc:snowflake://abc-test.us-east-1.snowflakecomputing.com/?private_key_file=C:\\temp\\rsa_key.p8&private_key_file_pwd=test_password&user=test_user";
@@ -427,7 +427,7 @@ public class SnowflakeDriverTest {
 
   @Test
   public void testReturnsNullForOtherJdbcConnectString() throws SQLException {
-    SnowflakeNoLogDriver snowflakeDriver = SnowflakeNoLogDriver.INSTANCE;
+    SnowflakeDriver snowflakeDriver = SnowflakeDriver.INSTANCE;
     Properties info = new Properties();
     String jdbcConnectString = "jdbc:mysql://host:port/database";
     assertNull(snowflakeDriver.connect(jdbcConnectString, info));
@@ -435,7 +435,7 @@ public class SnowflakeDriverTest {
 
   @Test
   public void testConnectWithMissingAccountIdentifier() throws SQLException {
-    SnowflakeNoLogDriver snowflakeDriver = SnowflakeNoLogDriver.INSTANCE;
+    SnowflakeDriver snowflakeDriver = SnowflakeDriver.INSTANCE;
     try {
       snowflakeDriver.getPropertyInfo("jdbc:snowflake://localhost:443/?&ssl=on", new Properties());
       fail();

@@ -93,7 +93,7 @@ public class SnowflakeBasicDataSource implements DataSource, Serializable {
     }
 
     try {
-      Connection con = SnowflakeNoLogDriver.INSTANCE.connect(getUrl(), properties);
+      Connection con = SnowflakeDriver.INSTANCE.connect(getUrl(), properties);
       logger.trace("Created a connection for {} at {}", user, (ArgSupplier) this::getUrl);
       return con;
     } catch (SQLException e) {
