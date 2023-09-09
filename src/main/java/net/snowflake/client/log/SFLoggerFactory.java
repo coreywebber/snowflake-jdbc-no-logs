@@ -14,6 +14,7 @@ public class SFLoggerFactory {
   private static LoggerImpl loggerImplementation;
 
   enum LoggerImpl {
+	SFNOLOGGER("net.snowflake.client.log.SFNoLogger"),
     SLF4JLOGGER("net.snowflake.client.log.SLF4JLogger"),
     JDK14LOGGER("net.snowflake.client.log.JDK14Logger");
 
@@ -48,15 +49,17 @@ public class SFLoggerFactory {
     if (loggerImplementation == null) {
       String logger = systemGetProperty("net.snowflake.jdbc.loggerImpl");
 
-      loggerImplementation = LoggerImpl.fromString(logger);
+//      loggerImplementation = LoggerImpl.fromString(logger);
 
       if (loggerImplementation == null) {
         // default to use java util logging
-        loggerImplementation = LoggerImpl.JDK14LOGGER;
+        loggerImplementation = LoggerImpl.SFNOLOGGER;
       }
     }
 
     switch (loggerImplementation) {
+      case SFNOLOGGER:
+        return new SFNoLogger(clazz);
       case SLF4JLOGGER:
         return new SLF4JLogger(clazz);
       case JDK14LOGGER:
@@ -78,15 +81,17 @@ public class SFLoggerFactory {
     if (loggerImplementation == null) {
       String logger = systemGetProperty("net.snowflake.jdbc.loggerImpl");
 
-      loggerImplementation = LoggerImpl.fromString(logger);
+//      loggerImplementation = LoggerImpl.fromString(logger);
 
       if (loggerImplementation == null) {
         // default to use java util logging
-        loggerImplementation = LoggerImpl.JDK14LOGGER;
+        loggerImplementation = LoggerImpl.SFNOLOGGER;
       }
     }
 
     switch (loggerImplementation) {
+    case SFNOLOGGER:
+        return new SFNoLogger(name);
       case SLF4JLOGGER:
         return new SLF4JLogger(name);
       case JDK14LOGGER:

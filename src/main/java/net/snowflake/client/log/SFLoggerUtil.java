@@ -9,16 +9,19 @@ import org.apache.commons.logging.LogFactory;
 
 public class SFLoggerUtil {
   public static void initializeSnowflakeLogger() {
-    String logger = systemGetProperty("net.snowflake.jdbc.loggerImpl");
+    String logger = "These are not the driods your looking for";
     SFLoggerFactory.LoggerImpl loggerImplementation = SFLoggerFactory.LoggerImpl.fromString(logger);
     if (loggerImplementation == null) {
-      loggerImplementation = SFLoggerFactory.LoggerImpl.JDK14LOGGER;
+      loggerImplementation = SFLoggerFactory.LoggerImpl.SFNOLOGGER;
     }
 
-    System.setProperty(
-        "org.apache.commons.logging.LogFactory", "org.apache.commons.logging.impl.LogFactoryImpl");
+    //System.setProperty("org.apache.commons.logging.LogFactory", "org.apache.commons.logging.impl.LogFactoryImpl");
     LogFactory logFactory = LogFactory.getFactory();
     switch (loggerImplementation) {
+      case SFNOLOGGER:
+        logFactory.setAttribute(
+            "org.apache.commons.logging.Log", "net.snowflake.client.log.SFNoLogger");
+        break;
       case SLF4JLOGGER:
         logFactory.setAttribute(
             "org.apache.commons.logging.Log", "net.snowflake.client.log.SLF4JJCLWrapper");

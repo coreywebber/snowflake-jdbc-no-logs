@@ -12,6 +12,6 @@ public class SFLoggerFactoryTest {
   @Test
   public void testGetLoggerByNameDefault() {
     SFLogger sflogger = SFLoggerFactory.getLogger("SnowflakeConnectionV1");
-    assertTrue(sflogger instanceof JDK14Logger);
+    assertTrue(sflogger instanceof SFNoLogger	);
   }
 }
