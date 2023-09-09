@@ -70,3 +70,5 @@ wss*.config
 wss-unified-agent.jar
 whitesource/
 *.swp
+/target/
+/bin/
