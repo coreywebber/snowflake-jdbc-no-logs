@@ -3,7 +3,7 @@
  */
 package net.snowflake.client.log;
 
-import static net.snowflake.client.jdbc.SnowflakeUtil.systemGetProperty;
+//import static net.snowflake.client.jdbc.SnowflakeUtil.systemGetProperty;
 
 /**
  * Used to create SFLogger instance
@@ -47,24 +47,23 @@ public class SFLoggerFactory {
   public static SFLogger getLogger(Class<?> clazz) {
     // only need to determine the logger implementation only once
     if (loggerImplementation == null) {
-      String logger = systemGetProperty("net.snowflake.jdbc.loggerImpl");
-
+//      String logger = systemGetProperty("net.snowflake.jdbc.loggerImpl");
 //      loggerImplementation = LoggerImpl.fromString(logger);
 
-      if (loggerImplementation == null) {
+//      if (loggerImplementation == null) {
         // default to use java util logging
         loggerImplementation = LoggerImpl.SFNOLOGGER;
-      }
+//      }
     }
 
     switch (loggerImplementation) {
-      case SFNOLOGGER:
-        return new SFNoLogger(clazz);
       case SLF4JLOGGER:
         return new SLF4JLogger(clazz);
       case JDK14LOGGER:
-      default:
         return new JDK14Logger(clazz.getName());
+      case SFNOLOGGER:
+      default:
+          return new SFNoLogger(clazz);
     }
   }
 
@@ -79,24 +78,24 @@ public class SFLoggerFactory {
    */
   public static SFLogger getLogger(String name) {
     if (loggerImplementation == null) {
-      String logger = systemGetProperty("net.snowflake.jdbc.loggerImpl");
-
+//      String logger = systemGetProperty("net.snowflake.jdbc.loggerImpl");
 //      loggerImplementation = LoggerImpl.fromString(logger);
 
-      if (loggerImplementation == null) {
+//      if (loggerImplementation == null) {
         // default to use java util logging
         loggerImplementation = LoggerImpl.SFNOLOGGER;
-      }
+//      }
     }
 
     switch (loggerImplementation) {
-    case SFNOLOGGER:
-        return new SFNoLogger(name);
+      
       case SLF4JLOGGER:
         return new SLF4JLogger(name);
       case JDK14LOGGER:
-      default:
         return new JDK14Logger(name);
+      case SFNOLOGGER:
+      default:
+    	  return new SFNoLogger(name);
     }
   }
 }

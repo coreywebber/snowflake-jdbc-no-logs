@@ -3,7 +3,7 @@
  */
 package net.snowflake.client.log;
 
-import static net.snowflake.client.jdbc.SnowflakeUtil.systemGetProperty;
+//import static net.snowflake.client.jdbc.SnowflakeUtil.systemGetProperty;
 
 import org.apache.commons.logging.LogFactory;
 

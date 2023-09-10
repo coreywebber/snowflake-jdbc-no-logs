@@ -27,11 +27,11 @@ public enum SFLogLevel {
    * @return
    */
   public static SFLogLevel getLogLevel(String levelStr) {
-    for (SFLogLevel level : SFLogLevel.values()) {
-      if (level.levelStr.equalsIgnoreCase(levelStr)) {
-        return level;
-      }
-    }
+//    for (SFLogLevel level : SFLogLevel.values()) {
+//      if (level.levelStr.equalsIgnoreCase(levelStr)) {
+//        return level;
+//      }
+//    }
 
     // Default is off.
     return SFLogLevel.OFF;

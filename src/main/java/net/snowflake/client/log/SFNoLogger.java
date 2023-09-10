@@ -3,20 +3,9 @@
  */
 package net.snowflake.client.log;
 
-import net.snowflake.client.util.SecretDetector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.helpers.FormattingTuple;
-import org.slf4j.helpers.MessageFormatter;
-import org.slf4j.spi.LocationAwareLogger;
-
 /** Created by hyu on 11/17/16. */
 public class SFNoLogger implements SFLogger {
   
-  private boolean isLocationAwareLogger = false;
-
-  private static final String FQCN = SFNoLogger.class.getName();
-
   public SFNoLogger(Class<?> clazz) {
     /* Do Nothing*/
   }
@@ -111,13 +100,4 @@ public class SFNoLogger implements SFLogger {
 	  /* Do Nothing*/
   }
 
-  private static Object[] evaluateLambdaArgs(Object... args) {
-    final Object[] result = new Object[args.length];
-
-    for (int i = 0; i < args.length; i++) {
-      result[i] = args[i] instanceof ArgSupplier ? ((ArgSupplier) args[i]).get() : args[i];
-    }
-
-    return result;
-  }
 }
