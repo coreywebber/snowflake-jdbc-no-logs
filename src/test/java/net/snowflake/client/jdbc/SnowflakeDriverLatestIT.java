@@ -416,6 +416,17 @@ public class SnowflakeDriverLatestIT extends BaseJDBCTest {
         "server URL in form of <protocol>://<host or domain>:<port number>/<path of resource>",
         info[0].description);
 
+    // Test with null URL and no properties. ServerURL is needed.
+    url = null;
+    props = new Properties();
+    driver = DriverManager.getDriver("jdbc:snowflake://snowflake.reg.local:8082");
+    info = driver.getPropertyInfo(url, props);
+    assertEquals(1, info.length);
+    assertEquals("serverURL", info[0].name);
+    assertEquals(
+        "server URL in form of <protocol>://<host or domain>:<port number>/<path of resource>",
+        info[0].description);
+
     // Test with URL that requires username and password.
     url = "jdbc:snowflake://snowflake.reg.local:8082";
     info = driver.getPropertyInfo(url, props);
@@ -531,6 +542,85 @@ public class SnowflakeDriverLatestIT extends BaseJDBCTest {
         assertTrue(FileUtils.contentEqualsIgnoreEOL(file1, unzipped, null));
       } finally {
         statement.execute("DROP TABLE IF EXISTS testLoadToLocalFS");
+        statement.close();
+      }
+    }
+  }
+
+  /**
+   * Tests PUT disable test
+   *
+   * @throws Throwable
+   */
+  @Test
+  @ConditionalIgnoreRule.ConditionalIgnore(condition = RunningOnGithubAction.class)
+  public void testPutDisable() throws Throwable {
+    Connection connection = null;
+    Statement statement = null;
+
+    // create a file
+    File file = tmpFolder.newFile("testfile99.csv");
+    BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+    bw.write("This content won't be uploaded as PUT is disabled.");
+    bw.close();
+
+    String sourceFilePathOriginal = file.getCanonicalPath();
+
+    Properties paramProperties = new Properties();
+    paramProperties.put("enablePutGet", false);
+
+    List<String> accounts = Arrays.asList(null, "s3testaccount", "azureaccount", "gcpaccount");
+    for (int i = 0; i < accounts.size(); i++) {
+      try {
+        connection = getConnection(accounts.get(i), paramProperties);
+
+        statement = connection.createStatement();
+
+        statement.execute("PUT file://" + sourceFilePathOriginal + " @testPutGet_disable_stage");
+
+        assertTrue("Shouldn't come here", false);
+      } catch (Exception ex) {
+        // Expected
+        assertTrue(ex.getMessage().equalsIgnoreCase("File transfers have been disabled."));
+      } finally {
+        statement.close();
+      }
+    }
+  }
+
+  /**
+   * Tests GET disable test
+   *
+   * @throws Throwable
+   */
+  @Test
+  @ConditionalIgnoreRule.ConditionalIgnore(condition = RunningOnGithubAction.class)
+  public void testGetDisable() throws Throwable {
+    Connection connection = null;
+    Statement statement = null;
+
+    // create a folder
+    File destFolder = tmpFolder.newFolder();
+    String destFolderCanonicalPath = destFolder.getCanonicalPath();
+
+    Properties paramProperties = new Properties();
+    paramProperties.put("enablePutGet", false);
+
+    List<String> accounts = Arrays.asList(null, "s3testaccount", "azureaccount", "gcpaccount");
+    for (int i = 0; i < accounts.size(); i++) {
+      try {
+        connection = getConnection(accounts.get(i), paramProperties);
+
+        statement = connection.createStatement();
+
+        statement.execute(
+            "GET @testPutGet_disable_stage 'file://" + destFolderCanonicalPath + "' parallel=8");
+
+        assertTrue("Shouldn't come here", false);
+      } catch (Exception ex) {
+        // Expected
+        assertTrue(ex.getMessage().equalsIgnoreCase("File transfers have been disabled."));
+      } finally {
         statement.close();
       }
     }

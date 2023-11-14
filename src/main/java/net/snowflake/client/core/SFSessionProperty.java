@@ -71,7 +71,11 @@ public enum SFSessionProperty {
 
   MAX_HTTP_RETRIES("maxHttpRetries", false, Integer.class),
 
-  PUT_GET_MAX_RETRIES("putGetMaxRetries", false, Integer.class);
+  ENABLE_PUT_GET("enablePutGet", false, Boolean.class),
+
+  PUT_GET_MAX_RETRIES("putGetMaxRetries", false, Integer.class),
+
+  RETRY_TIMEOUT("retryTimeout", false, Integer.class);
 
   // property key in string
   private String propertyKey;

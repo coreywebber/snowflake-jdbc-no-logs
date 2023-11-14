@@ -33,6 +33,7 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
@@ -84,6 +85,7 @@ public class SessionUtil {
   public static final String CLIENT_MEMORY_LIMIT_JVM = "net.snowflake.jdbc.clientMemoryLimit";
   public static final String CLIENT_MEMORY_LIMIT = "CLIENT_MEMORY_LIMIT";
   public static final String QUERY_CONTEXT_CACHE_SIZE = "QUERY_CONTEXT_CACHE_SIZE";
+  public static final String JDBC_ENABLE_PUT_GET = "JDBC_ENABLE_PUT_GET";
   public static final String CLIENT_PREFETCH_THREADS_JVM =
       "net.snowflake.jdbc.clientPrefetchThreads";
   public static final String CLIENT_PREFETCH_THREADS = "CLIENT_PREFETCH_THREADS";
@@ -110,6 +112,10 @@ public class SessionUtil {
       "ENABLE_STAGE_S3_PRIVATELINK_FOR_US_EAST_1";
 
   static final String SF_HEADER_SERVICE_NAME = "X-Snowflake-Service";
+
+  public static final String SF_HEADER_CLIENT_APP_ID = "CLIENT_APP_ID";
+
+  public static final String SF_HEADER_CLIENT_APP_VERSION = "CLIENT_APP_VERSION";
 
   private static final String ID_TOKEN_AUTHENTICATOR = "ID_TOKEN";
 
@@ -554,6 +560,8 @@ public class SessionUtil {
         clientEnv.put(SFSessionProperty.TRACING.getPropertyKey(), tracingLevel);
       }
 
+      clientEnv.put("JDBC_JAR_NAME", SnowflakeDriver.getJdbcJarname());
+
       data.put(ClientAuthnParameter.CLIENT_ENVIRONMENT.name(), clientEnv);
 
       // Initialize the session parameters
@@ -591,6 +599,10 @@ public class SessionUtil {
       HttpUtil.applyAdditionalHeadersForSnowsight(
           postRequest, loginInput.getAdditionalHttpHeadersForSnowsight());
 
+      // Add headers for driver name and version
+      postRequest.addHeader(SF_HEADER_CLIENT_APP_ID, loginInput.getAppId());
+      postRequest.addHeader(SF_HEADER_CLIENT_APP_VERSION, loginInput.getAppVersion());
+
       // attach the login info json body to the post request
       StringEntity input = new StringEntity(json, StandardCharsets.UTF_8);
       input.setContentType("application/json");
@@ -608,6 +620,7 @@ public class SessionUtil {
       setServiceNameHeader(loginInput, postRequest);
 
       String theString = null;
+
       int leftRetryTimeout = loginInput.getLoginTimeout();
       int leftsocketTimeout = loginInput.getSocketTimeout();
       int retryCount = 0;
@@ -900,6 +913,10 @@ public class SessionUtil {
       uriBuilder.addParameter(SFSession.SF_QUERY_REQUEST_ID, UUIDUtils.getUUID().toString());
 
       postRequest = new HttpPost(uriBuilder.build());
+
+      // Add headers for driver name and version
+      postRequest.addHeader(SF_HEADER_CLIENT_APP_ID, loginInput.getAppId());
+      postRequest.addHeader(SF_HEADER_CLIENT_APP_VERSION, loginInput.getAppVersion());
 
       // Add custom headers before adding common headers
       HttpUtil.applyAdditionalHeadersForSnowsight(
@@ -1258,6 +1275,10 @@ public class SessionUtil {
       postRequest.setEntity(input);
       postRequest.addHeader("accept", "application/json");
 
+      // Add headers for driver name and version
+      postRequest.addHeader(SF_HEADER_CLIENT_APP_ID, loginInput.getAppId());
+      postRequest.addHeader(SF_HEADER_CLIENT_APP_VERSION, loginInput.getAppVersion());
+
       final String gsResponse =
           HttpUtil.executeGeneralRequest(
               postRequest,
@@ -1547,6 +1568,10 @@ public class SessionUtil {
         if (session != null) {
           session.setQueryContextCacheSize((int) entry.getValue());
         }
+      } else if (JDBC_ENABLE_PUT_GET.equalsIgnoreCase(entry.getKey())) {
+        if (session != null) {
+          session.setJdbcEnablePutGet(SFLoginInput.getBooleanValue(entry.getValue()));
+        }
       } else {
         if (session != null) {
           session.setOtherParameter(entry.getKey(), entry.getValue());
@@ -1608,5 +1633,24 @@ public class SessionUtil {
         new SessionUtilKeyPair(
             privateKey, privateKeyFile, privateKeyFilePwd, accountName, userName);
     return s.issueJwtToken();
+  }
+
+  /**
+   * Helper method to check if the request path is a login/auth request to use for retry strategy.
+   *
+   * @param request the post request
+   * @return true if this is a login/auth request, false otherwise
+   */
+  public static boolean isNewRetryStrategyRequest(HttpRequestBase request) {
+    URI requestURI = request.getURI();
+    String requestPath = requestURI.getPath();
+    if (requestPath != null) {
+      if (requestPath.equals(SF_PATH_LOGIN_REQUEST)
+          || requestPath.equals(SF_PATH_AUTHENTICATOR_REQUEST)
+          || requestPath.equals(SF_PATH_TOKEN_REQUEST)) {
+        return true;
+      }
+    }
+    return false;
   }
 }

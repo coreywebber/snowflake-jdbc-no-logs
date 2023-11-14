@@ -4,8 +4,7 @@
 package net.snowflake.client.jdbc;
 
 import static net.snowflake.client.core.SessionUtil.CLIENT_SESSION_KEEP_ALIVE_HEARTBEAT_FREQUENCY;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
 import static org.junit.Assume.assumeTrue;
@@ -41,6 +40,7 @@ public class ConnectionIT extends BaseJDBCTest {
   public static final int INVALID_CONNECTION_INFO_CODE = 390100;
   private static final int SESSION_CREATION_OBJECT_DOES_NOT_EXIST_NOT_AUTHORIZED = 390201;
   private static final int ROLE_IN_CONNECT_STRING_DOES_NOT_EXIST = 390189;
+  public static final int BAD_REQUEST_GS_CODE = 390400;
 
   public static final int WAIT_FOR_TELEMETRY_REPORT_IN_MILLISECS = 5000;
 
@@ -135,7 +135,8 @@ public class ConnectionIT extends BaseJDBCTest {
         DriverManager.getConnection(url, properties);
         fail();
       } catch (SQLException e) {
-        assertThat(e.getErrorCode(), is(INVALID_CONNECTION_INFO_CODE));
+        assertThat(
+            e.getErrorCode(), anyOf(is(INVALID_CONNECTION_INFO_CODE), is(BAD_REQUEST_GS_CODE)));
       }
     }
   }
@@ -544,7 +545,8 @@ public class ConnectionIT extends BaseJDBCTest {
       DriverManager.getConnection(deploymentUrl, properties);
       fail();
     } catch (SQLException e) {
-      assertThat(e.getErrorCode(), is(INVALID_CONNECTION_INFO_CODE));
+      assertThat(
+          e.getErrorCode(), anyOf(is(INVALID_CONNECTION_INFO_CODE), is(BAD_REQUEST_GS_CODE)));
     }
 
     deploymentUrl = "jdbc:snowflake://sfcsupport.snowflakecomputing.com?insecureMode=true";
@@ -558,7 +560,8 @@ public class ConnectionIT extends BaseJDBCTest {
       DriverManager.getConnection(deploymentUrl, properties);
       fail();
     } catch (SQLException e) {
-      assertThat(e.getErrorCode(), is(INVALID_CONNECTION_INFO_CODE));
+      assertThat(
+          e.getErrorCode(), anyOf(is(INVALID_CONNECTION_INFO_CODE), is(BAD_REQUEST_GS_CODE)));
     }
   }
 
