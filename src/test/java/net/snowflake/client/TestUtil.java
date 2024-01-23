@@ -5,14 +5,23 @@ package net.snowflake.client;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+import java.sql.Statement;
+import java.util.regex.Pattern;
 import net.snowflake.client.core.SFException;
+import net.snowflake.client.jdbc.SnowflakeUtil;
 import net.snowflake.client.log.SFLogger;
 import net.snowflake.client.log.SFLoggerFactory;
 import org.junit.Assert;
 
 public class TestUtil {
   private static final SFLogger logger = SFLoggerFactory.getLogger(TestUtil.class);
+
+  private static final Pattern QUERY_ID_REGEX =
+      Pattern.compile("[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}");
+
   /**
    * Util function to assert a piece will throw exception and assert on the error code
    *
@@ -55,5 +64,47 @@ public class TestUtil {
           ex.getMessage());
     }
     return null;
+  }
+
+  public static void assertValidQueryId(String queryId) {
+    assertNotNull(queryId);
+    assertTrue(
+        "Expecting " + queryId + " is a valid UUID", QUERY_ID_REGEX.matcher(queryId).matches());
+  }
+
+  /**
+   * Creates schema and deletes it at the end of the passed function execution
+   *
+   * @param statement statement
+   * @param schemaName name of schema to create and delete after lambda execution
+   * @param action action to execute when schema was created
+   * @throws Exception when any error occurred
+   */
+  public static void withSchema(Statement statement, String schemaName, ThrowingRunnable action)
+      throws Exception {
+    try {
+      statement.execute("CREATE OR REPLACE SCHEMA " + schemaName);
+      action.run();
+    } finally {
+      statement.execute("DROP SCHEMA " + schemaName);
+    }
+  }
+
+  /**
+   * Creates schema and deletes it at the end of the passed function execution
+   *
+   * @param statement statement
+   * @param action action to execute when schema was created
+   * @throws Exception when any error occurred
+   */
+  public static void withRandomSchema(Statement statement, ThrowingConsumer<String> action)
+      throws Exception {
+    String customSchema = "TEST_SCHEMA_" + SnowflakeUtil.randomAlphaNumeric(5);
+    try {
+      statement.execute("CREATE OR REPLACE SCHEMA " + customSchema);
+      action.call(customSchema);
+    } finally {
+      statement.execute("DROP SCHEMA " + customSchema);
+    }
   }
 }

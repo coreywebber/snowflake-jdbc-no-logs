@@ -15,9 +15,11 @@ import java.math.RoundingMode;
 import java.nio.ByteBuffer;
 import java.sql.*;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 import net.snowflake.client.ConditionalIgnoreRule;
 import net.snowflake.client.RunningOnGithubAction;
+import net.snowflake.client.TestUtil;
 import net.snowflake.client.category.TestCategoryResultSet;
 import net.snowflake.client.core.SFBaseSession;
 import net.snowflake.client.core.SessionUtil;
@@ -165,9 +167,12 @@ public class ResultSetLatestIT extends ResultSet0IT {
    * Metadata API metric collection. The old driver didn't collect metrics.
    *
    * @throws SQLException arises if any exception occurs
+   * @throws ExecutionException arises if error occurred when sending telemetry events
+   * @throws InterruptedException arises if error occurred when sending telemetry events
    */
   @Test
-  public void testMetadataAPIMetricCollection() throws SQLException {
+  public void testMetadataAPIMetricCollection()
+      throws SQLException, ExecutionException, InterruptedException {
     Connection con = init();
     Telemetry telemetry =
         con.unwrap(SnowflakeConnectionV1.class).getSfSession().getTelemetryClient();
@@ -186,10 +191,7 @@ public class ResultSetLatestIT extends ResultSet0IT {
         TelemetryField.METADATA_METRICS.toString());
     // Assert function name and params match and that query id exists
     assertEquals(logs.get(0).getMessage().get("function_name").textValue(), "getColumns");
-    assertTrue(
-        Pattern.matches(
-            "[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}",
-            logs.get(0).getMessage().get("query_id").textValue()));
+    TestUtil.assertValidQueryId(logs.get(0).getMessage().get("query_id").textValue());
     JsonNode parameterValues = logs.get(0).getMessage().get("function_parameters");
     assertEquals(parameterValues.get("catalog").textValue(), "fakecatalog");
     assertEquals(parameterValues.get("schema").textValue(), "fakeschema");
@@ -197,7 +199,8 @@ public class ResultSetLatestIT extends ResultSet0IT {
     assertNull(parameterValues.get("specific_name_pattern").textValue());
 
     // send data to clear log for next test
-    telemetry.sendBatchAsync();
+    telemetry.sendBatchAsync().get();
+    assertEquals(0, ((TelemetryClient) telemetry).logBuffer().size());
 
     String catalog = con.getCatalog();
     String schema = con.getSchema();
@@ -215,10 +218,7 @@ public class ResultSetLatestIT extends ResultSet0IT {
         TelemetryField.METADATA_METRICS.toString());
     // Assert function name and params match and that query id exists
     assertEquals(logs.get(1).getMessage().get("function_name").textValue(), "getColumns");
-    assertTrue(
-        Pattern.matches(
-            "[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}",
-            logs.get(1).getMessage().get("query_id").textValue()));
+    TestUtil.assertValidQueryId(logs.get(1).getMessage().get("query_id").textValue());
     parameterValues = logs.get(1).getMessage().get("function_parameters");
     assertEquals(parameterValues.get("catalog").textValue(), catalog);
     assertEquals(parameterValues.get("schema").textValue(), schema);
@@ -338,10 +338,7 @@ public class ResultSetLatestIT extends ResultSet0IT {
     assertEquals("COLB", colNames.get(1));
     assertEquals(Types.DECIMAL, secretMetaData.getInternalColumnType(1));
     assertEquals(Types.VARCHAR, secretMetaData.getInternalColumnType(2));
-    assertTrue(
-        Pattern.matches(
-            "[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}",
-            secretMetaData.getQueryID()));
+    TestUtil.assertValidQueryId(secretMetaData.getQueryID());
 
     statement.execute("drop table if exists test_rsmd");
     statement.close();

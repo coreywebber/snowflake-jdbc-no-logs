@@ -32,14 +32,15 @@ jobs:
 
     test-linux:
         needs: build
-        name: ${{ matrix.cloud }} JDBC ${{ matrix.category }} on ${{ matrix.image }}
+        name: ${{ matrix.cloud }} JDBC${{ matrix.additionalMavenProfile }} ${{ matrix.category }} on ${{ matrix.image }}
         runs-on: ubuntu-latest
         strategy:
             fail-fast: false
             matrix:
-                image: [ 'jdbc-centos6-default', 'jdbc-centos7-openjdk8', 'jdbc-centos7-openjdk11', 'jdbc-centos7-openjdk17' ]
+                image: [ 'jdbc-centos7-openjdk8', 'jdbc-centos7-openjdk11', 'jdbc-centos7-openjdk17' ]
                 cloud: [ 'AWS' ]
                 category: ['TestCategoryResultSet,TestCategoryOthers,TestCategoryLoader', 'TestCategoryConnection,TestCategoryStatement', 'TestCategoryArrow,TestCategoryCore', 'TestCategoryFips']
+                additionalMavenProfile: ['', '-Dthin-jar']
         steps:
             - uses: actions/checkout@v1
             - name: Tests
@@ -49,6 +50,7 @@ jobs:
                 CLOUD_PROVIDER: ${{ matrix.cloud }}
                 TARGET_DOCKER_TEST_IMAGE: ${{ matrix.image }}
                 JDBC_TEST_CATEGORY: ${{ matrix.category }}
+                ADDITIONAL_MAVEN_PROFILE: ${{ matrix.additionalMavenProfile }}
               run: ./ci/test.sh
 
     test-linux-old-driver:
@@ -57,7 +59,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                image: [ 'jdbc-centos6-default' ]
+                image: [ 'jdbc-centos7-openjdk8' ]
                 cloud: [ 'AWS' ]
                 category: ['TestCategoryResultSet,TestCategoryOthers', 'TestCategoryConnection,TestCategoryStatement', 'TestCategoryCore,TestCategoryLoader']
                 is_old_driver: ['true']
